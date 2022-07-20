@@ -9,6 +9,7 @@ class ID3:
         yes_count = 0
         classnum = 2
         self.class_entropy = []
+        self.end = True
 
         for data in self.datas:
 
@@ -18,7 +19,6 @@ class ID3:
         no_count = len(self.datas) - yes_count
 
         self.init_entropy = self.calc_init_entropy(yes_count, no_count, classnum)
-        self.calc_entropy()
 
     def calc_init_entropy(self, m, n, classnum):
 
@@ -30,6 +30,8 @@ class ID3:
 
         past_classlist = []
         entropy = 0
+        count_list = []
+
         for data in self.datas:
             classname = data[idx]
             yes_count = 0
@@ -44,6 +46,9 @@ class ID3:
                             yes_count += 1
                         else:
                             no_count += 1
+
+                count_list.append([classname, yes_count, no_count])
+
                 if yes_count == 0:
                     yes_count = 1e-10
                 if no_count == 0:
@@ -53,20 +58,35 @@ class ID3:
 
             past_classlist.append(classname)
 
-        return entropy
+        return entropy, count_list
 
     def calc_entropy(self):
 
         each_entropy_list = []
         for idx,question in enumerate(questions):
             if question != "花火":
-                each_entropy = self.calc_each_entropy(idx)
+                each_entropy, _= self.calc_each_entropy(idx)
                 each_entropy_list.append(each_entropy)
 
         each_score = [self.init_entropy - each_entropy for each_entropy in each_entropy_list ]
 
         max_score = max(each_score)
-        print(questions[each_score.index(max_score)])
+        return questions[each_score.index(max_score)]
+
+    def verify_completed(self,index):
+        _,count_list = self.calc_each_entropy(index)
+        print(count_list)
+        return False
+
+
+
+    def process(self):
+        while self.end:
+            max_score_question = self.calc_entropy()
+            current_question_index = questions.index(max_score_question)
+            # print(questions.pop(remove_index))
+            self.end = self.verify_completed(current_question_index)
+
 
 
 if __name__ == "__main__":
@@ -82,4 +102,5 @@ if __name__ == "__main__":
     questions = ['天気', '風速', '湿度', '花火']
 
     id3 = ID3(datas,questions)
+    id3.process()
 
