@@ -6,23 +6,34 @@ class ID3:
         self.datas_len = len(datas)
         self.questions = questions
 
-        yes_count = 0
-        classnum = 2
+        # yes_count = 0
+        # classnum = 2
         self.class_entropy = []
         self.end = True
 
+        # for data in self.datas:
+        #
+        #     if data[-1] == "Yes":
+        #         yes_count += 1
+        #
+        # no_count = len(self.datas) - yes_count
+
+        # self.init_entropy = self.calc_init_entropy(yes_count, no_count, classnum)
+        self.init_entropy = self.calc_init_entropy(datas, questions)
+
+    def calc_init_entropy(self, m, n):
+
+        yes_count = 0
         for data in self.datas:
 
             if data[-1] == "Yes":
                 yes_count += 1
 
         no_count = len(self.datas) - yes_count
+        m = yes_count
+        n = no_count
 
-        self.init_entropy = self.calc_init_entropy(yes_count, no_count, classnum)
-
-    def calc_init_entropy(self, m, n, classnum):
-
-        entropy = m/(m+n) * math.log((m+n)/m,classnum) + n/(m+n) * math.log((m+n)/n,classnum)
+        entropy = m/(m+n) * math.log((m+n)/m,2) + n/(m+n) * math.log((m+n)/n,2)
 
         return entropy
 
@@ -75,17 +86,48 @@ class ID3:
 
     def verify_completed(self,index):
         _,count_list = self.calc_each_entropy(index)
-        print(count_list)
-        return False
 
+        zero_count = 0
+        for counts in count_list:
+            # print(counts)
+            zero_count += counts.count(0)
+            if counts.count(0):
+                self.zero_ans = counts[0]
+        if zero_count == len(count_list):
+            return False
+        else:
+            return True
 
+    # def next_question(self,index):
+        # del self.questions(index)
+        # print(self.questions)
 
     def process(self):
         while self.end:
             max_score_question = self.calc_entropy()
             current_question_index = questions.index(max_score_question)
-            # print(questions.pop(remove_index))
             self.end = self.verify_completed(current_question_index)
+            print(max_score_question)
+
+            if self.end:
+                del self.questions[current_question_index]
+                # self.datas[].remove(self.zero_ans)
+                for idx, data in enumerate(self.datas):
+                    # if data.count(self.zero_ans):
+                    for ans in data:
+                        if ans == self.zero_ans:
+                            del self.datas[idx]
+                        # print(data)
+                        # del data
+                # i = self.datas.index(self.zero_ans)
+                # print(i)
+                print(self.datas)
+                self.end = False
+                # self.calc_init_entropy()
+
+            else:
+                print("END")
+                # self.next_question(current_question_index)
 
 
 
