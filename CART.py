@@ -1,3 +1,4 @@
+#基本的にはID3と同じ処理の流れです
 
 class CART:
 
@@ -22,7 +23,7 @@ class CART:
         m = yes_count
         n = no_count
 
-        gini = 1 - ((m/(n+m))**2 + ((n/(n+m))**2))
+        gini = 1 - ((m/(n+m))**2 + ((n/(n+m))**2)) #初期のジニ不純度の計算
 
         return gini
 
@@ -54,7 +55,7 @@ class CART:
                 if no_count == 0:
                     no_count = 1e-10
 
-                gini += (1 - ((yes_count/count)**2 + (no_count/count)**2))*(count/self.datas_len)
+                gini += (1 - ((yes_count/count)**2 + (no_count/count)**2))*(count/self.datas_len) #それぞれのクラスのジニ不純度の計算
 
             past_classlist.append(classname)
 
@@ -73,6 +74,7 @@ class CART:
         max_score = max(each_score)
         return questions[each_score.index(max_score)], max_score
 
+    #決定木の終了判定
     def verify_completed(self,index):
         _,count_list = self.calc_each_gini(index)
 

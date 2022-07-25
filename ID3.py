@@ -8,7 +8,7 @@ class ID3:
 
         self.class_entropy = []
         self.end = True
-        self.init_entropy = self.calc_init_entropy(datas, questions)
+        self.init_entropy = self.calc_init_entropy(datas, questions) #初期のエントロピーの計算
 
     def calc_init_entropy(self, m, n):
 
@@ -26,6 +26,7 @@ class ID3:
 
         return entropy
 
+    #各エントロピーの計算
     def calc_each_entropy(self,idx):
 
         past_classlist = []
@@ -52,7 +53,7 @@ class ID3:
                 if yes_count == 0:
                     yes_count = 1e-10
                 if no_count == 0:
-                    no_count = 1e-10
+                    no_count = 1e-10 #logがあるため，ゼロにならないようにする，yes_countも同様
 
                 entropy += (- (yes_count/count)*math.log(yes_count/count, 2) - (no_count/count)*math.log(no_count/count, 2))*(count/self.datas_len)
 
@@ -60,6 +61,7 @@ class ID3:
 
         return entropy, count_list
 
+    #算出した各エントロピーから質問を決める
     def calc_entropy(self):
 
         each_entropy_list = []
@@ -73,6 +75,7 @@ class ID3:
         max_score = max(each_score)
         return questions[each_score.index(max_score)], max_score
 
+    #決定木の終了判定
     def verify_completed(self,index):
         _,count_list = self.calc_each_entropy(index)
 
